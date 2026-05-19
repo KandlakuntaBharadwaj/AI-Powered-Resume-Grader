@@ -1,0 +1,65 @@
+AI-Powered Resume Grader - Complete Project Documentation
+
+=======================================================
+1. Project Overview
+=======================================================
+The AI-Powered Resume Grader is a full-stack web application designed to automatically analyze and evaluate user resumes (PDFs) using advanced generative AI (Google Gemini). 
+It consists of a React-based frontend for user interaction and an Express-based Node.js backend for file processing, database operations, and AI integration.
+
+=======================================================
+2. How the Frontend was Created
+=======================================================
+Directory: /frontend
+
+The frontend was initialized using Vite with the React template to provide a fast and modern development experience. 
+Command used for setup: `npm create vite@latest frontend -- --template react`
+
+Core Libraries & Tools Used:
+- React (react, react-dom): Used as the primary library for building the user interface.
+- Vite: Used as the build tool and development server for hot-module replacement (HMR).
+- React Router (react-router-dom): Implemented to handle navigation between different pages (like Home, Results, etc.).
+- Axios (axios): Used to send HTTP requests (such as POST requests with the resume file) to our backend API.
+- Lucide React (lucide-react): Used to easily incorporate scalable vector icons into the UI.
+
+Architecture:
+- The UI is divided into modular React components (e.g., FileUpload, ResultsDisplay).
+- State management is handled primarily through React hooks (`useState`, `useEffect`).
+- When a user uploads a PDF, the frontend creates a `FormData` object and uses Axios to POST it to the backend endpoint.
+
+=======================================================
+3. How the Backend was Created
+=======================================================
+Directory: /backend
+
+The backend is a Node.js application built from scratch to act as an intermediary between the user, the database, and the Google Gemini AI.
+Command used for setup: `npm init -y` inside the backend folder, followed by installing necessary packages.
+
+Core Libraries & Tools Used:
+- Express (express): Used to build the RESTful API and handle routing.
+- Mongoose (mongoose): Used to connect to a MongoDB database and define schemas for saving resume analysis results.
+- Google Generative AI (@google/generative-ai): The official SDK used to communicate with the Gemini API to analyze the extracted resume text.
+- Multer (multer): Configured as middleware to handle incoming file uploads (`multipart/form-data`). It temporarily stores the uploaded PDFs in memory or on disk.
+- PDF Parse (pdf-parse): A critical tool that reads the raw PDF buffer provided by multer and extracts the plain text content, which is then fed into the AI model.
+- Dotenv (dotenv): Used to securely load environment variables (like PORT, MONGO_URI, GEMINI_API_KEY) from a `.env` file.
+- CORS (cors): Enabled to allow our frontend application (running on a different port) to communicate securely with the backend API.
+
+Architecture:
+- The backend follows an MVC-like structure (Routes, Controllers, Services).
+- When the frontend sends a PDF, the backend uses `multer` to receive it.
+- `pdf-parse` reads the PDF and extracts the text.
+- A prompt is constructed combining the extracted text with grading instructions.
+- The `aiService.js` sends this prompt to the Google Gemini API.
+- The AI returns structured feedback/grading, which is parsed and optionally saved to MongoDB.
+- Finally, the backend responds to the frontend with the JSON results.
+
+=======================================================
+4. Integration & Data Flow
+=======================================================
+1. User interacts with the React frontend and selects a PDF file.
+2. Frontend sends a POST request with the file to the Express backend.
+3. Backend receives the file via Multer, extracts text using PDF-Parse.
+4. Backend sends the text to the Google Gemini API.
+5. Google Gemini returns an analysis.
+6. Backend formats the response (and saves to MongoDB if needed).
+7. Backend sends JSON response back to the Frontend.
+8. Frontend updates state and displays the grading results to the user using clean UI components.
