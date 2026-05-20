@@ -1,71 +1,160 @@
 # AI-Powered Resume Grader: Comprehensive Code Breakdown
 
-This document provides a deep, technical, line-by-line/block-by-block explanation of the code for every crucial file in the Backend and Frontend of the AI-Powered Resume Grader application.
+This document provides a highly detailed, line-by-line, and block-by-block explanation of the code for every crucial file in the Backend and Frontend of the AI-Powered Resume Grader application. 
 
 ---
 
-## Part 1: Backend Architecture (`/backend`)
+## 🛠️ PART 1: Backend Architecture (`/backend`)
 
-The backend is an Express API that handles PDF parsing and communicates with the Hugging Face Inference API.
+The backend is built using **Node.js** and **Express.js**. Its primary responsibilities are handling file uploads, extracting text from PDFs, sending that text to the Hugging Face AI for analysis, and saving the results to a MongoDB database.
 
 ### 1. `backend/server.js`
-This is the main entry point for the Node.js application.
-*   **Lines 1-7**: Imports required modules. `express` for the web server, `dotenv` for environment variables, `cors` to allow frontend requests, `connectDB` to hook up MongoDB, and `fs`/`path` for file system operations.
-*   **Lines 10-13**: Calls `dotenv.config()` to load the `.env` file into `process.env`. Then calls `connectDB()` to connect to the database.
-*   **Lines 15-19**: Initializes the `express()` app and applies global middlewares. `app.use(cors())` enables Cross-Origin Resource Sharing. `app.use(express.json())` parses incoming JSON payloads.
-*   **Lines 22-25**: Checks if an `uploads` directory exists. If not, it uses `fs.mkdirSync` to create it. This is crucial because `multer` will fail if its destination folder doesn't exist.
-*   **Line 28**: Registers the resume routes using `app.use('/api/resume', resumeRoutes)`. Any request to `/api/resume/...` will be handled by the router defined in `resumeRoutes.js`.
-*   **Lines 34-38**: A global error handling middleware. If any route calls `next(err)`, this catches it, logs it, and returns a standard `500` JSON response.
-*   **Lines 40-44**: Starts the server listening on the `PORT` (defaults to 5000).
+This is the **entry point** of your backend application. It sets up the server and ties all the different pieces together.
 
-### 2. `backend/controllers/resumeController.js`
-This file contains the core business logic.
-*   **Lines 6-20**: The `uploadAndAnalyze` function is defined. It first checks if a file was actually uploaded (`req.file`). It validates that the mimetype is exactly `'application/pdf'`. It then checks if the file exceeds `5MB`. If any check fails, it immediately returns a `400 Bad Request`.
-*   **Lines 21-25**: Extracts `jobDescription` from `req.body` and gets the physical file path. It calls `extractTextFromPDF(filePath)` (from `pdfService.js`) and waits for it to convert the PDF buffer into a plain text string.
-*   **Lines 27-28**: Calls `analyzeResume(parsedText, jobDescription)` (from `aiService.js`). This sends the prompt to Hugging Face and returns a strictly formatted JSON object containing scores and keywords.
-*   **Lines 30-43**: Wraps the MongoDB `Resume.create()` call in a `try-catch` block. This is a resilient design pattern; if the database is down, the user still gets their analysis results back instead of crashing the whole process.
-*   **Lines 45-46**: Calls `fs.unlinkSync(filePath)` to delete the uploaded PDF from the local disk. This prevents the server's hard drive from filling up over time.
-*   **Lines 48-56**: Returns a `200 OK` response with the parsed AI data combined with the database `_id`.
-
-### 3. `backend/services/aiService.js`
-This module interacts directly with the Hugging Face AI.
-*   **Line 1**: Imports `HfInference` from `@huggingface/inference`.
-*   **Lines 5-8**: Validates that `HUGGINGFACE_API_KEY` exists in the environment variables.
-*   **Lines 12-29**: Defines the `prompt`. It uses ES6 template literals to inject the `jobDescription` and `resumeText`. Crucially, it instructs the AI to *only* output valid JSON in a very specific schema (`score`, `keywordsExtracted`, `missingKeywords`, `suggestions`).
-*   **Lines 31-38**: Calls `hf.chatCompletion()`. It explicitly uses the `Qwen/Qwen2.5-72B-Instruct` model and passes the prompt as a `user` message. `temperature: 0.2` is set low to ensure the AI's response is deterministic and strictly formatted.
-*   **Lines 43-52**: Uses a Regex `match(/\{[\s\S]*\}/)` to extract *only* the JSON portion of the AI's response. This is a safety measure in case the AI prepends text like "Here is your JSON:". It then parses it into a native JavaScript object and returns it.
-
-### 4. `backend/services/pdfService.js`
-A simple wrapper around the `pdf-parse` library.
-*   **Line 6**: Uses `fs.readFileSync` to read the physical PDF file off the disk into a Node Buffer.
-*   **Line 7**: Passes the buffer to `pdfParse()`, which decodes the PDF format and extracts the raw ASCII/UTF-8 text characters. 
+*   **Imports & Setup**:
+    *   `express`: The framework used to create the web server.
+    *   `dotenv`: Loads environment variables (like API keys) from the `.env` file so they aren't hardcoded.
+    *   `cors`: (Cross-Origin Resource Sharing) Allows your frontend (running on Vercel) to talk to your backend (running on Render) without security blocks.
+    *   `connectDB`: A custom function imported to establish the MongoDB connection.
+    *   `fs` & `path`: Built-in Node.js modules used for reading/writing files and handling directory paths.
+*   **Initialization**:
+    *   `dotenv.config()` is called immediately to make variables available in `process.env`.
+    *   `connectDB()` is called to connect to the database.
+    *   `const app = express()` creates the actual server instance.
+*   **Middlewares**:
+    *   `app.use(cors())`: Activates CORS.
+    *   `app.use(express.json())`: Tells the server to automatically parse incoming JSON data in the request body.
+*   **Uploads Directory Management**:
+    *   The code checks if a folder named `uploads` exists using `fs.existsSync()`.
+    *   If it does not exist, it creates it using `fs.mkdirSync()`. This is absolutely critical because the file uploader (`multer`) will crash if the destination folder is missing.
+*   **Routing**:
+    *   `app.use('/api/resume', resumeRoutes)`: This links the URL path `/api/resume` to the routes defined in the `resumeRoutes.js` file.
+*   **Error Handling**:
+    *   An `app.use((err, req, res, next))` block acts as a global safety net. If any code throws an error, this catches it, logs it, and prevents the server from crashing, returning a neat `500 Server Error` response instead.
+*   **Server Start**:
+    *   `app.listen(PORT, ...)` tells the server to turn on and start listening for web traffic on the specified port.
 
 ---
 
-## Part 2: Frontend Architecture (`/frontend`)
+### 2. `backend/controllers/resumeController.js`
+This file contains the **"brain"** or business logic of the app. It dictates exactly what happens when a user uploads a resume.
 
-The frontend is a Vite + React application.
+*   **Initial Validation (Lines 6-20)**:
+    *   The `uploadAndAnalyze` function is defined to handle the request.
+    *   **File Check**: It checks `if (!req.file)`. If the user didn't attach a file, it returns an error immediately.
+    *   **Type Check**: It ensures `req.file.mimetype === 'application/pdf'`. If someone uploads an image or a Word doc, it blocks it.
+    *   **Size Check**: It calculates the max size (`5 * 1024 * 1024` = 5 Megabytes). If the file is too large, it is rejected.
+*   **Data Extraction (Lines 21-26)**:
+    *   It grabs the optional `jobDescription` from the request body.
+    *   It grabs the `filePath` of the newly uploaded PDF.
+    *   It calls `await extractTextFromPDF(filePath)` which reads the physical PDF file and converts it into a raw string of text.
+*   **AI Analysis (Lines 27-29)**:
+    *   It calls `await analyzeResume(parsedText, jobDescription)`. This pauses the function while the text is sent to Hugging Face, waiting for the AI to read the resume and grade it.
+*   **Database Saving (Lines 30-44)**:
+    *   It creates a new database record using `Resume.create({...})`.
+    *   It saves the original filename, the parsed text, and all the specific AI feedback (score, keywords, suggestions).
+    *   **Important**: This is wrapped in a `try...catch` block. If the database goes offline, the app doesn't crash; it just skips saving and still returns the grading results to the user.
+*   **Cleanup (Lines 45-47)**:
+    *   `fs.unlinkSync(filePath)` deletes the uploaded PDF from the server's hard drive. This is crucial so your server doesn't run out of storage space over time.
+*   **Response (Lines 48-56)**:
+    *   Sends a `200 OK` JSON response back to the frontend, packed with the success message and all the AI analysis data.
+
+---
+
+### 3. `backend/services/aiService.js`
+This file specifically handles **talking to the Hugging Face AI API**.
+
+*   **Setup**:
+    *   Imports `HfInference` from the `@huggingface/inference` library.
+    *   Checks for `process.env.HUGGINGFACE_API_KEY`. If missing, it throws an error immediately to warn you.
+    *   Initializes the connection with `const hf = new HfInference(apiKey)`.
+*   **The Prompt Design**:
+    *   A large template string (`prompt`) is created. This is the exact instruction set sent to the AI.
+    *   It tells the AI: "You are an expert ATS..."
+    *   It strictly instructs the AI to return data in a **JSON format** with specific keys: `score`, `keywordsExtracted`, `missingKeywords`, and `suggestions`.
+*   **Making the Request**:
+    *   `hf.chatCompletion({...})` is called.
+    *   **Model**: It specifically uses `Qwen/Qwen2.5-72B-Instruct` (a highly intelligent model good at following instructions).
+    *   **Temperature**: Set to `0.2`. Temperature controls creativity. A low temperature makes the AI more robotic, strict, and predictable, which is exactly what we want for formatting JSON data.
+*   **Data Cleaning (Regex)**:
+    *   Sometimes AI adds conversational text like "Here is your JSON: { ... }".
+    *   The code `responseText.match(/\{[\s\S]*\}/)` is a Regular Expression that scans the AI's response, completely ignores conversational text, and forcefully extracts ONLY the JSON object.
+    *   `JSON.parse()` turns that text into a usable JavaScript object.
+
+---
+
+### 4. `backend/services/pdfService.js`
+A small but vital file that reads PDFs.
+
+*   **Process**:
+    *   `fs.readFileSync(filePath)` opens the PDF file and reads its raw binary data into a Buffer.
+    *   `pdfParse(dataBuffer)` (using the external `pdf-parse` library) processes that binary data, strips away the images and formatting, and returns just the raw, readable text characters so the AI can understand it.
+
+---
+
+## 💻 PART 2: Frontend Architecture (`/frontend`)
+
+The frontend is a **React** application built with **Vite**. Its job is to provide a beautiful user interface, handle file drag-and-drop, and visually display the AI's grading.
 
 ### 1. `frontend/src/apis/api.js`
-The central location for all backend HTTP requests.
-*   **Lines 4-5**: Defines `API_BASE_URL`.
-*   **Lines 6-23**: The `uploadResume` asynchronous function. It instantiates a standard browser `FormData` object. It appends the `file` and conditionally appends the `jobDescription`. It then uses `axios.post` to send this to the backend. It explicitly sets the header `'Content-Type': 'multipart/form-data'` so Express and Multer know how to parse the incoming binary file.
+This file acts as the **bridge** between the frontend and the backend.
+
+*   **Base URL**:
+    *   `const API_BASE_URL = 'https://ai-powered-resume-grader.onrender.com/api'` defines where the backend lives.
+*   **The `uploadResume` Function**:
+    *   Takes the `file` and `jobDescription` as arguments.
+    *   Creates a `new FormData()` object. (Standard JSON cannot transmit physical files, so `FormData` is required for file uploads).
+    *   Appends the file and description to this form.
+    *   Uses `axios.post()` to send this data to the backend.
+    *   **Crucial Header**: Sets `Content-Type: multipart/form-data` so the backend knows a file is incoming.
+
+---
 
 ### 2. `frontend/src/pages/Home.jsx`
-The main view where users upload their resumes.
-*   **Lines 7-11**: Uses React `useState` hooks to track the `file`, `jobDescription`, `loading` state, and any `error` messages.
-*   **Lines 13-35**: The `handleAnalyze` function. It triggers when the user clicks the Analyze button. It sets `loading` to true, calls `uploadResume` from the API file, and waits for a response. If successful, it uses `useNavigate` from `react-router-dom` to dynamically transition to the `/dashboard` page, passing the `response.data` along in the router's internal state (`{ state: { analysis: response.data } }`).
-*   **Lines 44-56**: Renders the `FileUpload` component and a `<textarea>` for the optional job description.
-*   **Lines 69-75**: Conditionally renders a loading overlay with a CSS spinner (`<div className="spinner"></div>`) if the `loading` state is true.
+The **Landing Page** of the website.
+
+*   **State Management (Hooks)**:
+    *   Uses `useState` extensively to remember the current state of the page:
+        *   `file`: The PDF the user selected.
+        *   `jobDescription`: The text the user typed.
+        *   `loading`: A true/false toggle to show or hide the loading spinner.
+        *   `error`: Stores error messages to show the user if something fails.
+*   **The `handleAnalyze` Function**:
+    *   Triggered when the user clicks "Analyze Resume".
+    *   It turns on the loading spinner (`setLoading(true)`).
+    *   It calls `uploadResume()` (from `api.js`) and waits for the backend to finish.
+    *   **Routing**: If successful, it uses React Router's `navigate('/dashboard', { state: { analysis: response.data } })`. This magically teleports the user to the Results page *while* carrying the AI data with them in the background state.
+*   **Render (UI)**:
+    *   Displays the title, the `FileUpload` component, and a text area for the job description.
+    *   Conditionally renders a `<div className="loading-overlay">` if `loading` is true, blocking the screen while the AI thinks.
+
+---
 
 ### 3. `frontend/src/components/FileUpload.jsx`
-Handles the complex Drag-and-Drop file UI.
-*   **Lines 5-14**: `handleFileChange` triggers when a user clicks to browse for a file. It verifies the selected file is a PDF and sets it in the parent's state via the `setFile` prop.
-*   **Lines 16-26**: `handleDrop` is wrapped in `useCallback`. It intercepts the default browser behavior of opening a dropped file in a new tab (`e.preventDefault()`). It grabs the file from `e.dataTransfer.files[0]`, validates it is a PDF, and sets it to state.
-*   **Lines 38-44**: A hidden `<input type="file" style={{ display: 'none' }} />`. It is visually hidden, but linked to the UI via the `<label htmlFor="fileInput">`. Clicking the stylized drag-and-drop box actually clicks this hidden native file input.
+The interactive **Drag-and-Drop** box.
+
+*   **`handleFileChange`**:
+    *   Runs if the user clicks the box and selects a file from their computer folders.
+    *   Checks `selectedFile.type !== 'application/pdf'` to reject non-PDFs.
+*   **`handleDrop`**:
+    *   Wrapped in `useCallback` for performance.
+    *   Runs if the user drags a file from their desktop and drops it on the browser.
+    *   Calls `e.preventDefault()` to stop the browser's default behavior (which is to open the PDF in the current tab, ruining the app experience).
+    *   Grabs the file from `e.dataTransfer.files[0]`.
+*   **The Hidden Input**:
+    *   There is a `<input type="file" style={{ display: 'none' }} />`. It is completely invisible.
+    *   It is wrapped in a `<label>`. Because of how HTML works, clicking the large, beautifully styled label automatically clicks the invisible file input, opening the file browser cleanly.
+
+---
 
 ### 4. `frontend/src/pages/Dashboard.jsx`
-The results view.
-*   **Lines 8-10**: Uses `useLocation` hook to extract the `analysis` data that was passed from `Home.jsx` during the navigation event.
-*   **Lines 12-14**: A guard clause. If the user directly types `/dashboard` in the URL without analyzing a resume, `analysis` will be null, and they are immediately redirected back to `<Navigate to="/" />`.
-*   **Lines 27-39**: Renders the CSS grid layout, passing the `analysis.score` into the `<ScoreDisplay />` component, and the `analysis.keywordsExtracted`, `missingKeywords`, and `suggestions` arrays into the `<KeywordList />` component.
+The **Results Page** that shows the final grades.
+
+*   **Data Retrieval**:
+    *   Uses `useLocation()` to grab the `analysis` data that the `Home.jsx` page sent over during navigation.
+*   **Security/Guard Clause**:
+    *   Checks `if (!analysis)`. If a user just types "yourwebsite.com/dashboard" into their URL bar without actually uploading a resume, `analysis` will be empty. The app catches this and instantly kicks them back to the home page using `<Navigate to="/" />`.
+*   **Layout**:
+    *   Renders a grid.
+    *   Passes `analysis.score` into the `<ScoreDisplay />` component so it can draw a visual score.
+    *   Passes `analysis.keywordsExtracted`, `missingKeywords`, and `suggestions` into the `<KeywordList />` component to render them as neat bullet points or tags.
