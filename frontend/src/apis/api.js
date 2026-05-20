@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5000/api';
-
+//const API_BASE_URL = 'http://localhost:5000/api';
+// NEW
+const API_BASE_URL = 'https://ai-powered-resume-grader.onrender.com/api';
 export const uploadResume = async (file, jobDescription) => {
   const formData = new FormData();
   formData.append('resume', file);
