@@ -46,6 +46,7 @@ const analyzeResume = async (resumeText, jobDescription = '') => {
     
     return JSON.parse(jsonString);
   } catch (error) {
+    console.error('FULL GEMINI ERROR:', error);
     console.error('Error analyzing resume with AI:', error);
     
     if (error.status === 403) {
