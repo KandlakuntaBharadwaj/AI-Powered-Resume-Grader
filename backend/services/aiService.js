@@ -11,7 +11,7 @@ const getGeminiClient = () => {
 const analyzeResume = async (resumeText, jobDescription = '') => {
   try {
     const genAI = getGeminiClient();
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-latest' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     const prompt = `
       You are an expert ATS (Applicant Tracking System) and resume reviewer. 
