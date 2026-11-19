@@ -382,10 +382,10 @@ export const downloadResumePdf = (data) => {
   // --- Graph 3: 4 Category Pillars Audit ---
   const contentScore = Math.round(
     ((data.contentAnalysis?.summaryEvaluation?.score || 70) +
-     (data.contentAnalysis?.workExperienceEvaluation?.score || 70) +
-     (data.contentAnalysis?.educationEvaluation?.score || 75) +
-     (data.contentAnalysis?.projectsEvaluation?.score || 70) +
-     (data.contentAnalysis?.achievementsEvaluation?.score || 65)) / 5
+      (data.contentAnalysis?.workExperienceEvaluation?.score || 70) +
+      (data.contentAnalysis?.educationEvaluation?.score || 75) +
+      (data.contentAnalysis?.projectsEvaluation?.score || 70) +
+      (data.contentAnalysis?.achievementsEvaluation?.score || 65)) / 5
   );
   const styleScore = data.styleAnalysis?.actionVerbUsage?.score || 75;
   const skillsScore = matchPct;
