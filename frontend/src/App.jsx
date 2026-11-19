@@ -1,36 +1,56 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
+import Footer from './components/Footer';
+import LandingPage from './pages/LandingPage';
+import ResumeAnalyzer from './pages/ResumeAnalyzer';
+import AnalysisReport from './pages/AnalysisReport';
 import Dashboard from './pages/Dashboard';
+import History from './pages/History';
+import Profile from './pages/Profile';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
-import History from './pages/History';
-import Profile from './pages/Profile';
 import './index.css';
 
 function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="app-wrapper">
+        <div className="app-layout">
           <Navbar />
-          <main className="main-content">
+          <main className="main-viewport">
             <Routes>
               {/* Public Routes */}
+              <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
 
               {/* Protected Routes */}
               <Route
-                path="/"
+                path="/analyze"
                 element={
                   <ProtectedRoute>
-                    <Home />
+                    <ResumeAnalyzer />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/results"
+                element={
+                  <ProtectedRoute>
+                    <AnalysisReport />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/results/:id"
+                element={
+                  <ProtectedRoute>
+                    <AnalysisReport />
                   </ProtectedRoute>
                 }
               />
@@ -58,11 +78,13 @@ function App() {
                   </ProtectedRoute>
                 }
               />
+
+              {/* Backward Compatibility Fallbacks */}
+              <Route path="/upload" element={<Navigate to="/analyze" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </main>
-          <footer className="footer">
-            <p>&copy; {new Date().getFullYear()} AI Resume Grader. All rights reserved.</p>
-          </footer>
+          <Footer />
         </div>
       </Router>
     </AuthProvider>

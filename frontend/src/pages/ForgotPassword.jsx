@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { forgotPassword, resetPassword } from '../apis/api';
+import { FileCheck2, Mail, KeyRound, Lock, ArrowLeft, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -72,7 +73,7 @@ const ForgotPassword = () => {
         setMessage(res.message);
         setTimeout(() => {
           navigate('/login');
-        }, 3000);
+        }, 2500);
       } else {
         setError(res.message || 'Failed to reset password.');
       }
@@ -84,88 +85,128 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="auth-container">
-      <div className="hero-section">
-        <h1>Reset Password</h1>
-        <p>Recover your account password using a secure verification code.</p>
-      </div>
+    <div className="auth-page-root">
+      <div className="auth-card-modern">
+        <div className="auth-brand-header">
+          <div className="logo-icon-bg">
+            <FileCheck2 size={24} className="logo-icon" />
+          </div>
+          <h2>Reset Password</h2>
+          <p className="auth-subtext">
+            {step === 1
+              ? 'Enter your account email to receive a secure 6-digit recovery PIN.'
+              : 'Enter the 6-digit recovery code and choose a new password.'}
+          </p>
+        </div>
 
-      <div className="upload-card">
+        {error && (
+          <div className="auth-alert error">
+            <AlertCircle size={16} />
+            <span>{error}</span>
+          </div>
+        )}
+
+        {message && (
+          <div className="auth-alert success">
+            <CheckCircle2 size={16} />
+            <span>{message}</span>
+          </div>
+        )}
+
         {step === 1 ? (
-          <form onSubmit={handleRequestPin} className="auth-form">
-            <div className="form-group">
+          <form onSubmit={handleRequestPin} className="auth-form-modern">
+            <div className="form-field-group">
               <label htmlFor="email">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={submitting}
-                required
-              />
+              <div className="input-with-icon">
+                <Mail size={17} className="field-icon" />
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={submitting}
+                  autoComplete="email"
+                  required
+                />
+              </div>
             </div>
 
-            {error && <div className="error-message">{error}</div>}
-            {message && <div className="success-message">{message}</div>}
-
-            <button type="submit" className="btn-primary" disabled={submitting}>
-              {submitting ? 'Sending PIN...' : 'Send Reset PIN'}
+            <button type="submit" className="btn-primary btn-auth-submit" disabled={submitting}>
+              {submitting ? 'Sending PIN...' : 'Send Recovery PIN'}
             </button>
           </form>
         ) : (
-          <form onSubmit={handleResetPassword} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="token">6-Digit Reset PIN</label>
-              <input
-                type="text"
-                id="token"
-                placeholder="Enter 6-digit verification code"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-                disabled={submitting}
-                required
-              />
+          <form onSubmit={handleResetPassword} className="auth-form-modern">
+            <div className="form-field-group">
+              <label htmlFor="token">6-Digit Verification PIN</label>
+              <div className="input-with-icon">
+                <KeyRound size={17} className="field-icon" />
+                <input
+                  type="text"
+                  id="token"
+                  placeholder="e.g. 123456"
+                  value={token}
+                  onChange={(e) => setToken(e.target.value)}
+                  disabled={submitting}
+                  required
+                />
+              </div>
             </div>
 
-            <div className="form-group">
+            <div className="form-field-group">
               <label htmlFor="newPassword">New Password</label>
-              <input
-                type="password"
-                id="newPassword"
-                placeholder="Enter new password (min 6 chars)"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                disabled={submitting}
-                required
-              />
+              <div className="input-with-icon">
+                <Lock size={17} className="field-icon" />
+                <input
+                  type="password"
+                  id="newPassword"
+                  placeholder="Min 6 characters"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  disabled={submitting}
+                  required
+                />
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                placeholder="Confirm your new password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                disabled={submitting}
-                required
-              />
+            <div className="form-field-group">
+              <label htmlFor="confirmPassword">Confirm New Password</label>
+              <div className="input-with-icon">
+                <Lock size={17} className="field-icon" />
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  placeholder="Re-enter new password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  disabled={submitting}
+                  required
+                />
+              </div>
             </div>
 
-            {error && <div className="error-message">{error}</div>}
-            {message && <div className="success-message" style={{ color: 'var(--success-color)', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', padding: '1rem', borderRadius: 'var(--border-radius-sm)', textAlign: 'center' }}>{message}</div>}
+            <button type="submit" className="btn-primary btn-auth-submit" disabled={submitting}>
+              {submitting ? 'Resetting Password...' : 'Update Password & Log In'}
+            </button>
 
-            <button type="submit" className="btn-primary" disabled={submitting}>
-              {submitting ? 'Resetting Password...' : 'Reset Password'}
+            <button
+              type="button"
+              className="btn-link-step-back"
+              onClick={() => setStep(1)}
+              disabled={submitting}
+            >
+              Need a new PIN? Go back
             </button>
           </form>
         )}
 
-        <p className="auth-link">
-          Remember your password? <Link to="/login">Sign in here</Link>
-        </p>
+        <div className="auth-footer-prompt">
+          <Link to="/login" className="back-to-login-link">
+            <ArrowLeft size={15} />
+            <span>Back to Sign In</span>
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -80,7 +80,7 @@ export const resetPassword = async (email, token, newPassword, confirmPassword) 
 };
 
 // Upload and analyze resume
-export const uploadResume = async (file, jobDescription) => {
+export const uploadResume = async (file, jobDescription = '', onUploadProgress = null) => {
   const formData = new FormData();
   formData.append('resume', file);
   if (jobDescription) {
@@ -92,10 +92,16 @@ export const uploadResume = async (file, jobDescription) => {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      onUploadProgress: (progressEvent) => {
+        if (onUploadProgress && progressEvent.total) {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          onUploadProgress(percentCompleted);
+        }
+      },
     });
     return response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throw error.response?.data || error;
   }
 };
 
@@ -108,3 +114,35 @@ export const getHistory = async () => {
     throw error.response?.data || error.message;
   }
 };
+
+// Fetch specific resume analysis by ID
+export const getResumeById = async (id) => {
+  try {
+    const response = await api.get(`/resume/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Delete resume analysis
+export const deleteResume = async (id) => {
+  try {
+    const response = await api.delete(`/resume/${id}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+// Get Dashboard Aggregated Statistics
+export const getDashboardStats = async () => {
+  try {
+    const response = await api.get('/resume/stats');
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export default api;
