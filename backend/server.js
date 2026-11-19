@@ -3,11 +3,12 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const resumeRoutes = require('./routes/resumeRoutes');
+const authRoutes = require('./routes/authRoutes');
 const fs = require('fs');
 const path = require('path');
 
 // Load env vars
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 // Connect to database
 connectDB();
@@ -26,6 +27,7 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Routes
 app.use('/api/resume', resumeRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
   res.send('AI Resume Grader API is running...');

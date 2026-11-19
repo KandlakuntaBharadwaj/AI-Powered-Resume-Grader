@@ -1,17 +1,22 @@
 const { HfInference } = require('@huggingface/inference');
 const dotenv = require('dotenv');
-dotenv.config();
+const path = require('path');
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 async function run() {
-  try {
-    const apiKey = process.env.HUGGINGFACE_API_KEY;
-    console.log("Testing Hugging Face API with key:", apiKey ? "Loaded" : "Missing");
+  const model = "meta-llama/Llama-3.3-70B-Instruct";
+  const apiKey = process.env.HUGGINGFACE_API_KEY;
+  console.log("Testing Hugging Face API with key:", apiKey ? "Loaded" : "Missing");
 
-    const hf = new HfInference(apiKey);
-    const prompt = "Please respond with a JSON object containing a greeting message. Example: {\"message\": \"Hello World\"}";
-    
+  if (!apiKey) return;
+
+  const hf = new HfInference(apiKey);
+  const prompt = "Respond with a JSON object containing a greeting message. Example: {\"message\": \"Hello World\"}";
+
+  console.log(`Testing model: ${model}`);
+  try {
     const response = await hf.chatCompletion({
-      model: "Qwen/Qwen2.5-72B-Instruct",
+      model: model,
       messages: [
         { role: "user", content: prompt }
       ],
@@ -19,9 +24,9 @@ async function run() {
       temperature: 0.2
     });
 
-    console.log("Response:", response.choices[0].message.content);
+    console.log("Success! Response:", response.choices[0].message.content.trim());
   } catch(e) {
-    console.error("ERROR:", e.message);
+    console.error("Error:", e.message);
   }
 }
 run();

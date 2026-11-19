@@ -37,6 +37,8 @@ const uploadAndAnalyze = async (req, res) => {
         keywordsExtracted: aiAnalysis.keywordsExtracted,
         missingKeywords: aiAnalysis.missingKeywords,
         suggestions: aiAnalysis.suggestions,
+        user: req.user.id,
+        jobDescription: jobDescription || '',
       });
     } catch (dbError) {
       console.warn('Could not save to database, continuing without saving.', dbError.message);
@@ -67,7 +69,7 @@ const uploadAndAnalyze = async (req, res) => {
 
 const getRecentAnalyses = async (req, res) => {
   try {
-    const resumes = await Resume.find().sort({ createdAt: -1 }).limit(10);
+    const resumes = await Resume.find({ user: req.user.id }).sort({ createdAt: -1 });
     res.status(200).json({ success: true, data: resumes });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server Error' });

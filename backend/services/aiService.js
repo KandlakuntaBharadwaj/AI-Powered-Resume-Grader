@@ -37,7 +37,7 @@ const analyzeResume = async (resumeText, jobDescription = '') => {
     `;
 
     const response = await hf.chatCompletion({
-      model: "Qwen/Qwen2.5-72B-Instruct",
+      model: "meta-llama/Llama-3.3-70B-Instruct",
       messages: [
         { role: "user", content: prompt }
       ],
@@ -62,14 +62,18 @@ const analyzeResume = async (resumeText, jobDescription = '') => {
     console.error('FULL HUGGING FACE ERROR:', error);
     console.error('Error analyzing resume with AI:', error);
     
-    if (error.message.includes('403')) {
+    const errMsg = error.message || '';
+    
+    if (errMsg.includes('HUGGINGFACE_API_KEY')) {
+      throw error;
+    } else if (errMsg.includes('403')) {
       throw new Error('AI analysis failed: Access Denied. Please check your API key permissions.');
-    } else if (error.message.includes('429')) {
+    } else if (errMsg.includes('429') || errMsg.toLowerCase().includes('loading')) {
       throw new Error('AI analysis failed: Quota exceeded or Model is loading. Please try again later.');
-    } else if (error.message.includes('JSON') || error instanceof SyntaxError) {
+    } else if (errMsg.includes('JSON') || error instanceof SyntaxError) {
       throw new Error('AI analysis failed: Unexpected response format from AI.');
     }
-    throw new Error('AI analysis failed. Please check your API key and try again.');
+    throw new Error(`AI analysis failed: ${errMsg || 'Unexpected error occurred.'}`);
   }
 };
 
