@@ -30,28 +30,28 @@ const CategoryBreakdownChart = ({ analysis }) => {
       score: contentScore,
       icon: FileText,
       description: 'Quantifiable achievements, role descriptions & education depth',
-      color: '#4f46e5',
+      color: '#FACC15',
     },
     {
       name: 'ATS Keyword Match',
       score: skillsScore,
       icon: Award,
       description: 'Role-critical skills and terminology match rate',
-      color: '#10b981',
+      color: '#22C55E',
     },
     {
       name: 'Professional Writing & Style',
       score: styleScore,
       icon: Sparkles,
       description: 'Action verbs, tone, grammatical clarity, and conciseness',
-      color: '#0ea5e9',
+      color: '#EAB308',
     },
     {
       name: 'ATS Layout & Readability',
       score: formatScore,
       icon: Layers,
       description: 'Structural hierarchy, heading consistency, and scanability',
-      color: '#f59e0b',
+      color: '#F59E0B',
     },
   ];
 

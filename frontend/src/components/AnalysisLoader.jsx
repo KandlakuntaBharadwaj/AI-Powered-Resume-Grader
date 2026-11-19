@@ -100,7 +100,7 @@ const AnalysisLoader = ({ isAnalyzing, uploadProgress = 0, isFinished = false, e
           {isQuotaError && (
             <div className="quota-fix-card" style={{
               background: 'var(--surface-card)',
-              border: '1px solid rgba(99, 102, 241, 0.3)',
+              border: '1px solid rgba(250, 204, 21, 0.3)',
               borderRadius: 'var(--radius-md)',
               padding: '1.25rem 1.5rem',
               margin: '1.5rem 0',
@@ -116,9 +116,9 @@ const AnalysisLoader = ({ isAnalyzing, uploadProgress = 0, isFinished = false, e
                 Hugging Face requires paid credits for serverless 70B models. You can get <strong>100% free</strong> instant access to the exact same strong model (<strong>Llama 3.3 70B</strong>) by getting a free Groq key:
               </p>
               <ol style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', paddingLeft: '1.25rem', lineHeight: '1.6' }}>
-                <li>Get a free key at <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style={{ color: '#818cf8', textDecoration: 'underline' }}>console.groq.com/keys</a></li>
-                <li>Add <code style={{ background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px', color: '#a5b4fc' }}>GROQ_API_KEY=gsk_...</code> to <code style={{ background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px', color: '#a5b4fc' }}>backend/.env</code></li>
-                <li>Or recharge pre-paid credits on <a href="https://huggingface.co/settings/billing" target="_blank" rel="noopener noreferrer" style={{ color: '#818cf8', textDecoration: 'underline' }}>Hugging Face Billing</a></li>
+                <li>Get a free key at <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" style={{ color: '#FACC15', textDecoration: 'underline' }}>console.groq.com/keys</a></li>
+                <li>Add <code style={{ background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px', color: '#FACC15' }}>GROQ_API_KEY=gsk_...</code> to <code style={{ background: 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '4px', color: '#FACC15' }}>backend/.env</code></li>
+                <li>Or recharge pre-paid credits on <a href="https://huggingface.co/settings/billing" target="_blank" rel="noopener noreferrer" style={{ color: '#FACC15', textDecoration: 'underline' }}>Hugging Face Billing</a></li>
               </ol>
             </div>
           )}
@@ -158,7 +158,7 @@ const AnalysisLoader = ({ isAnalyzing, uploadProgress = 0, isFinished = false, e
           <svg width={150} height={150} className="progress-ring-svg">
             <circle
               className="progress-ring-bg"
-              stroke="#e2e8f0"
+              stroke="#303030"
               strokeWidth={10}
               fill="transparent"
               r={radius}
@@ -167,7 +167,7 @@ const AnalysisLoader = ({ isAnalyzing, uploadProgress = 0, isFinished = false, e
             />
             <circle
               className="progress-ring-fill"
-              stroke="#4f46e5"
+              stroke="#FACC15"
               strokeWidth={10}
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}

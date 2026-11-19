@@ -53,7 +53,7 @@ const KeywordsChart = ({ matchingKeywords = [], missingKeywords = [] }) => {
               cx={size / 2}
               cy={size / 2}
               r={radius}
-              stroke="#fee2e2"
+              stroke="rgba(239, 68, 68, 0.25)"
               strokeWidth={strokeWidth}
               fill="transparent"
             />
@@ -62,7 +62,7 @@ const KeywordsChart = ({ matchingKeywords = [], missingKeywords = [] }) => {
               cx={size / 2}
               cy={size / 2}
               r={radius}
-              stroke="#10b981"
+              stroke="#22C55E"
               strokeWidth={strokeWidth}
               fill="transparent"
               strokeDasharray={`${matchDash} ${circumference}`}

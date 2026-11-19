@@ -1,4 +1,6 @@
 const { HfInference } = require('@huggingface/inference');
+const { processDomainKeywords, detectDomains } = require('./keywordService');
+const { DOMAINS } = require('../data/keywordDatabase');
 
 /**
  * Normalizes and ensures all expected fields are present in the AI analysis output.
@@ -12,8 +14,16 @@ const normalizeAnalysisOutput = (raw, resumeText, jobDescription) => {
     ? Math.max(0, Math.min(100, Math.round(raw.matchPercentage)))
     : (jobDescription ? Math.max(20, Math.min(95, Math.round(score * 0.95))) : score);
 
-  const keywordsExtracted = Array.isArray(raw.keywordsExtracted) ? raw.keywordsExtracted : [];
-  const missingKeywords = Array.isArray(raw.missingKeywords) ? raw.missingKeywords : [];
+  // Apply comprehensive domain-aware keyword extraction, branch boundaries & equivalency deduplication
+  const processedKws = processDomainKeywords(
+    resumeText,
+    jobDescription,
+    raw.keywordsExtracted || [],
+    raw.missingKeywords || []
+  );
+
+  const keywordsExtracted = processedKws.keywordsExtracted;
+  const missingKeywords = processedKws.missingKeywords;
 
   // Default suggestions to ensure exactly 6 comprehensive actionable fixes
   const defaultSuggestions = [
@@ -86,18 +96,18 @@ const normalizeAnalysisOutput = (raw, resumeText, jobDescription) => {
     strengths: Array.isArray(raw.contentAnalysis?.strengths) && raw.contentAnalysis.strengths.length > 0
       ? raw.contentAnalysis.strengths
       : [
-          'Clear progression of technical roles and responsibilities across employment history',
-          'Good representation of modern programming languages and industry-standard frameworks',
-          'Concise bullet structure that avoids excessive paragraph blocks',
-          'Chronological employment trajectory that parses cleanly across automated ATS filters'
-        ],
+        'Clear progression of technical roles and responsibilities across employment history',
+        'Good representation of modern programming languages and industry-standard frameworks',
+        'Concise bullet structure that avoids excessive paragraph blocks',
+        'Chronological employment trajectory that parses cleanly across automated ATS filters'
+      ],
     weaknesses: Array.isArray(raw.contentAnalysis?.weaknesses) && raw.contentAnalysis.weaknesses.length > 0
       ? raw.contentAnalysis.weaknesses
       : [
-          'Limited quantifiable business metrics and scale numbers in earlier job positions',
-          'Some critical keywords from the target role are not explicitly mentioned in experience bullets',
-          'Action verbs could be diversified to show greater leadership and system ownership'
-        ],
+        'Limited quantifiable business metrics and scale numbers in earlier job positions',
+        'Some critical keywords from the target role are not explicitly mentioned in experience bullets',
+        'Action verbs could be diversified to show greater leadership and system ownership'
+      ],
   };
 
   const styleAnalysis = {
@@ -127,20 +137,24 @@ const normalizeAnalysisOutput = (raw, resumeText, jobDescription) => {
   };
 
   const skillsAnalysis = {
-    matchingTechnicalSkills: Array.isArray(raw.skillsAnalysis?.matchingTechnicalSkills) && raw.skillsAnalysis.matchingTechnicalSkills.length > 0
-      ? raw.skillsAnalysis.matchingTechnicalSkills
-      : keywordsExtracted.slice(0, 10),
-    missingTechnicalSkills: Array.isArray(raw.skillsAnalysis?.missingTechnicalSkills) && raw.skillsAnalysis.missingTechnicalSkills.length > 0
-      ? raw.skillsAnalysis.missingTechnicalSkills
-      : missingKeywords.slice(0, 6),
-    matchingSoftSkills: Array.isArray(raw.skillsAnalysis?.matchingSoftSkills) && raw.skillsAnalysis.matchingSoftSkills.length > 0
-      ? raw.skillsAnalysis.matchingSoftSkills
+    matchingTechnicalSkills: processedKws.skillsAnalysis?.matchingTechnicalSkills?.length > 0
+      ? processedKws.skillsAnalysis.matchingTechnicalSkills
+      : (Array.isArray(raw.skillsAnalysis?.matchingTechnicalSkills) && raw.skillsAnalysis.matchingTechnicalSkills.length > 0
+          ? raw.skillsAnalysis.matchingTechnicalSkills
+          : keywordsExtracted.slice(0, 10)),
+    missingTechnicalSkills: processedKws.skillsAnalysis?.missingTechnicalSkills?.length > 0
+      ? processedKws.skillsAnalysis.missingTechnicalSkills
+      : (Array.isArray(raw.skillsAnalysis?.missingTechnicalSkills) && raw.skillsAnalysis.missingTechnicalSkills.length > 0
+          ? raw.skillsAnalysis.missingTechnicalSkills
+          : missingKeywords.slice(0, 6)),
+    matchingSoftSkills: processedKws.skillsAnalysis?.matchingSoftSkills?.length > 0
+      ? processedKws.skillsAnalysis.matchingSoftSkills
       : ['Cross-functional Collaboration', 'Technical Problem Solving', 'Agile Delivery', 'Communication'],
-    missingSoftSkills: Array.isArray(raw.skillsAnalysis?.missingSoftSkills) && raw.skillsAnalysis.missingSoftSkills.length > 0
-      ? raw.skillsAnalysis.missingSoftSkills
+    missingSoftSkills: processedKws.skillsAnalysis?.missingSoftSkills?.length > 0
+      ? processedKws.skillsAnalysis.missingSoftSkills
       : ['System Ownership', 'Stakeholder Alignment', 'Engineering Mentorship'],
-    recommendedSkills: Array.isArray(raw.skillsAnalysis?.recommendedSkills) && raw.skillsAnalysis.recommendedSkills.length > 0
-      ? raw.skillsAnalysis.recommendedSkills
+    recommendedSkills: processedKws.skillsAnalysis?.recommendedSkills?.length > 0
+      ? processedKws.skillsAnalysis.recommendedSkills
       : (missingKeywords.length > 0 ? missingKeywords.slice(0, 5) : ['System Architecture', 'CI/CD Pipelines', 'Cloud Optimization']),
   };
 
@@ -271,10 +285,14 @@ const callGroqWithFallback = async (apiKey, prompt) => {
  */
 const analyzeResume = async (resumeText, jobDescription = '') => {
   try {
+    const activeDomains = detectDomains(resumeText, jobDescription);
+    const domainNames = Array.from(activeDomains).map((d) => DOMAINS[d]?.name || d).join(', ');
+
     const prompt = `
 You are a senior ATS (Applicant Tracking System) software architect and expert executive resume reviewer.
 Analyze the following extracted resume text thoroughly and objectively.
-${jobDescription ? `Compare it strictly against the target job description:\n${jobDescription}\n` : 'Evaluate it against competitive tech & modern industry standards.'}
+Target Engineering Domain: ${domainNames}
+${jobDescription ? `Compare it strictly against the target job description:\n${jobDescription}\n` : `Evaluate it against competitive standards within ${domainNames}.`}
 
 Extracted Resume Text:
 """
@@ -283,7 +301,12 @@ ${resumeText.substring(0, 6000)}
 
 CRITICAL EVALUATION RULES:
 1. Ground your analysis ONLY on the actual extracted resume text above and the job description. NEVER invent qualifications, experience, skills, or achievements.
-2. Calculate the ATS score (0-100) dynamically, authentically, and unconstrained across the full 0–100 spectrum:
+2. DOMAIN-AWARE KEYWORDS:
+   - Identify candidate skills and missing requirements strictly relevant to ${domainNames}.
+   - Never recommend unrelated branch-specific keywords (e.g. never suggest CAD/CAM or Civil tools for a Software Engineer, or web frameworks for a Civil Engineer, unless the job description explicitly asks for it).
+   - Do NOT treat soft skills as technical keywords.
+   - Do NOT mark a keyword as missing if its equivalent technology or variation is already present in the resume.
+3. Calculate the ATS score (0-100) dynamically, authentically, and unconstrained across the full 0–100 spectrum:
    - Evaluate real keyword coverage (matching vs missing skills).
    - Evaluate quantified business accomplishments (STAR framework, metrics, percentages, dollar scale).
    - Evaluate single-column ATS formatting and standard section headers.
@@ -490,6 +513,7 @@ Return ONLY a valid JSON object with the following structure (no markdown format
           model,
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.2,
+          
           max_tokens: 4000,
         }),
       });

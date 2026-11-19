@@ -6,20 +6,20 @@ const ScoreGauge = ({ score = 0, size = 180, strokeWidth = 14, label = 'ATS Comp
   const safeScore = Math.max(0, Math.min(100, Math.round(score)));
   const offset = circumference - (safeScore / 100) * circumference;
 
-  let color = '#ef4444'; // Red (below 50)
+  let color = '#EF4444'; // Red (below 50)
   let statusText = 'Needs Significant Work';
   let statusBadge = 'badge-danger';
 
   if (safeScore >= 80) {
-    color = '#10b981'; // Green
+    color = '#22C55E'; // Success Green
     statusText = 'Excellent (ATS Ready)';
     statusBadge = 'badge-success';
   } else if (safeScore >= 65) {
-    color = '#6366f1'; // Indigo
+    color = '#FACC15'; // Golden Yellow
     statusText = 'Strong Match';
     statusBadge = 'badge-primary';
   } else if (safeScore >= 50) {
-    color = '#f59e0b'; // Amber
+    color = '#F59E0B'; // Warning Amber
     statusText = 'Average / Needs Optimization';
     statusBadge = 'badge-warning';
   }
@@ -30,7 +30,7 @@ const ScoreGauge = ({ score = 0, size = 180, strokeWidth = 14, label = 'ATS Comp
         <svg width={size} height={size} className="score-gauge-svg">
           <circle
             className="score-gauge-bg"
-            stroke="#e2e8f0"
+            stroke="#303030"
             strokeWidth={strokeWidth}
             fill="transparent"
             r={radius}

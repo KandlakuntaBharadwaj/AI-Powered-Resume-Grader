@@ -28,13 +28,13 @@ export const downloadResumePdf = (data) => {
   const primaryColor = [15, 23, 42];     // slate-900 (deep dark for high contrast readability)
   const secondaryColor = [51, 65, 85];   // slate-700 (body text)
   const mutedColor = [100, 116, 139];    // slate-500 (labels and metadata)
-  const brandColor = [79, 70, 229];      // indigo-600
-  const brandLight = [238, 242, 255];    // indigo-50
-  const successColor = [16, 185, 129];   // emerald-500
-  const successLight = [236, 253, 245];  // emerald-50
-  const warningColor = [245, 158, 11];   // amber-500
+  const brandColor = [202, 138, 4];      // gold-600 (#CA8A04)
+  const brandLight = [254, 252, 232];    // gold-50 (#FEFCE8)
+  const successColor = [34, 197, 94];    // green-500 (#22C55E)
+  const successLight = [240, 253, 244];  // green-50
+  const warningColor = [245, 158, 11];   // amber-500 (#F59E0B)
   const warningLight = [254, 252, 232];  // amber-50
-  const dangerColor = [239, 68, 68];     // red-500
+  const dangerColor = [239, 68, 68];     // red-500 (#EF4444)
   const dangerLight = [254, 242, 242];   // red-50
   const cardBg = [248, 250, 252];        // slate-50
   const borderSubtle = [226, 232, 240];  // slate-200
@@ -392,9 +392,9 @@ export const downloadResumePdf = (data) => {
   const formatScore = data.formatAnalysis?.readabilityScore || Math.min(100, score + 5);
 
   const categories = [
-    { name: 'Content & Impact', sc: contentScore, col: [79, 70, 229] },
-    { name: 'Keyword Alignment', sc: skillsScore, col: [16, 185, 129] },
-    { name: 'Writing & Style', sc: styleScore, col: [14, 165, 233] },
+    { name: 'Content & Impact', sc: contentScore, col: [202, 138, 4] },
+    { name: 'Keyword Alignment', sc: skillsScore, col: [34, 197, 94] },
+    { name: 'Writing & Style', sc: styleScore, col: [234, 179, 8] },
     { name: 'ATS Structure', sc: formatScore, col: [245, 158, 11] },
   ];
 
