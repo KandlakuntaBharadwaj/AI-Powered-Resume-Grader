@@ -49,27 +49,37 @@ const normalizeAnalysisOutput = (raw, resumeText, jobDescription) => {
 
   const contentAnalysis = {
     summaryEvaluation: {
-      score: raw.contentAnalysis?.summaryEvaluation?.score ?? 72,
+      score: typeof raw.contentAnalysis?.summaryEvaluation?.score === 'number'
+        ? Math.max(0, Math.min(100, Math.round(raw.contentAnalysis.summaryEvaluation.score)))
+        : Math.max(25, Math.min(98, score + 2)),
       feedback: raw.contentAnalysis?.summaryEvaluation?.feedback ||
         'The professional summary establishes candidate background, but can be elevated by highlighting top quantifiable career wins and specific technical specializations in the first sentence.',
     },
     workExperienceEvaluation: {
-      score: raw.contentAnalysis?.workExperienceEvaluation?.score ?? 70,
+      score: typeof raw.contentAnalysis?.workExperienceEvaluation?.score === 'number'
+        ? Math.max(0, Math.min(100, Math.round(raw.contentAnalysis.workExperienceEvaluation.score)))
+        : Math.max(25, Math.min(98, score - 2)),
       feedback: raw.contentAnalysis?.workExperienceEvaluation?.feedback ||
         'Work experience demonstrates progressive career responsibility. Incorporating more explicit business context, team scope, and operational impact will maximize recruiter resonance.',
     },
     educationEvaluation: {
-      score: raw.contentAnalysis?.educationEvaluation?.score ?? 78,
+      score: typeof raw.contentAnalysis?.educationEvaluation?.score === 'number'
+        ? Math.max(0, Math.min(100, Math.round(raw.contentAnalysis.educationEvaluation.score)))
+        : Math.max(30, Math.min(100, score + 5)),
       feedback: raw.contentAnalysis?.educationEvaluation?.feedback ||
         'Educational background is clearly documented with institution, degree, and graduation timeline adhering to standard ATS parsing hierarchies.',
     },
     projectsEvaluation: {
-      score: raw.contentAnalysis?.projectsEvaluation?.score ?? 70,
+      score: typeof raw.contentAnalysis?.projectsEvaluation?.score === 'number'
+        ? Math.max(0, Math.min(100, Math.round(raw.contentAnalysis.projectsEvaluation.score)))
+        : Math.max(25, Math.min(98, score)),
       feedback: raw.contentAnalysis?.projectsEvaluation?.feedback ||
         'Project descriptions reflect applied technical proficiency. Highlight architectural challenges, tool integrations, and real-world deployment outcomes.',
     },
     achievementsEvaluation: {
-      score: raw.contentAnalysis?.achievementsEvaluation?.score ?? 65,
+      score: typeof raw.contentAnalysis?.achievementsEvaluation?.score === 'number'
+        ? Math.max(0, Math.min(100, Math.round(raw.contentAnalysis.achievementsEvaluation.score)))
+        : Math.max(20, Math.min(95, score - 5)),
       feedback: raw.contentAnalysis?.achievementsEvaluation?.feedback ||
         'Achievements could feature more measurable metrics (e.g. percentage improvements, cost reductions, revenue impact, or user scale) to substantiate claims.',
     },
@@ -98,7 +108,9 @@ const normalizeAnalysisOutput = (raw, resumeText, jobDescription) => {
     grammarAndLanguage: raw.styleAnalysis?.grammarAndLanguage ||
       'Consistent grammatical structure with appropriate past-tense usage for prior roles and present-tense for current responsibilities.',
     actionVerbUsage: {
-      score: raw.styleAnalysis?.actionVerbUsage?.score ?? 76,
+      score: typeof raw.styleAnalysis?.actionVerbUsage?.score === 'number'
+        ? Math.max(0, Math.min(100, Math.round(raw.styleAnalysis.actionVerbUsage.score)))
+        : Math.max(25, Math.min(95, score)),
       feedback: raw.styleAnalysis?.actionVerbUsage?.feedback ||
         'Solid use of action verbs leading bullet points. Elevate impact by replacing passive verbs (worked on, helped) with decisive leadership verbs.',
       examplesFound: Array.isArray(raw.styleAnalysis?.actionVerbUsage?.examplesFound) && raw.styleAnalysis.actionVerbUsage.examplesFound.length > 0
@@ -271,12 +283,16 @@ ${resumeText.substring(0, 6000)}
 
 CRITICAL EVALUATION RULES:
 1. Ground your analysis ONLY on the actual extracted resume text above and the job description. NEVER invent qualifications, experience, skills, or achievements.
-2. Be highly critical and authentic with the ATS score (0-100):
-   - Under 50: Poor formatting, missing sections, severe lack of keywords/metrics.
-   - 50-69: Average resume, missing measurable impact or critical skills.
-   - 70-84: Solid, well-structured resume with good keyword alignment.
-   - 85+: Exceptional, quantified metrics, high keyword overlap, flawless ATS structure.
-3. Calculate matchPercentage (0-100) reflecting exact match to the provided job description (or role standard).
+2. Calculate the ATS score (0-100) dynamically, authentically, and unconstrained across the full 0–100 spectrum:
+   - Evaluate real keyword coverage (matching vs missing skills).
+   - Evaluate quantified business accomplishments (STAR framework, metrics, percentages, dollar scale).
+   - Evaluate single-column ATS formatting and standard section headers.
+   - Evaluate active leadership verbs and writing conciseness.
+   - DO NOT default or artificially cluster scores into narrow bands like 70-82.
+   - Give exceptional resumes the high scores they deserve (e.g. 86, 89, 92, 95).
+   - Give under-optimized or entry-level resumes accurate lower scores (e.g. 38, 49, 58, 64).
+   - Reflect true real-world ATS acceptance probability.
+3. Calculate matchPercentage (0-100): The exact mathematical percentage of role-critical qualifications, tools, and competencies satisfied by the resume.
 4. Extract matching vs missing keywords accurately.
 5. Provide detailed, informative breakdowns for Content, Style, Skills, Format, and Section-by-Section evaluation.
 6. Provide EXACTLY 6 high-impact, actionable suggestions with concrete fixes.
