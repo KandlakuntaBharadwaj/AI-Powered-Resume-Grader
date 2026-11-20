@@ -26,10 +26,10 @@ const AtsCompetitivenessReference = ({ title = 'ATS Competitiveness Benchmark Sc
               <CheckCircle2 size={14} />
               High Competitiveness
             </span>
-            <span className="ats-tier-range text-emerald">80–98</span>
+            <span className="ats-tier-range text-emerald">80–99</span>
           </div>
           <p className="ats-tier-desc">
-            Resumes with strong keyword alignment, clear metrics, and clean structure now receive the high scores they deserve (e.g., 87, 91, 94).
+            Resumes with strong job-description keyword alignment, measurable achievements, relevant skills, and a well-structured, ATS-friendly format receive higher scores (e.g., 87, 91, 96).
           </p>
         </div>
 
@@ -40,10 +40,10 @@ const AtsCompetitivenessReference = ({ title = 'ATS Competitiveness Benchmark Sc
               <AlertTriangle size={14} />
               Moderate Competitiveness
             </span>
-            <span className="ats-tier-range text-gold">60–84</span>
+            <span className="ats-tier-range text-gold">50–79</span>
           </div>
           <p className="ats-tier-desc">
-            Resumes with partial keyword match or unquantified bullets are scored naturally.
+            Resumes with partial keyword alignment, limited measurable achievements, or some missing job-relevant skills receive moderate scores (e.g., 56, 68, 75).
           </p>
         </div>
 
@@ -54,10 +54,10 @@ const AtsCompetitivenessReference = ({ title = 'ATS Competitiveness Benchmark Sc
               <AlertCircle size={14} />
               Low Competitiveness
             </span>
-            <span className="ats-tier-range text-danger">20–59</span>
+            <span className="ats-tier-range text-danger">20–49</span>
           </div>
           <p className="ats-tier-desc">
-            Resumes with major keyword gaps or poor parsing layouts receive accurate lower scores (e.g., 38, 49, 58).
+            Resumes with significant keyword gaps, missing relevant skills, weak descriptions, or ATS parsing issues receive lower scores (e.g., 28, 38, 45).
           </p>
         </div>
       </div>

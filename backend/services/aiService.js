@@ -12,7 +12,7 @@ const normalizeAnalysisOutput = (raw, resumeText, jobDescription) => {
 
   const matchPercentage = typeof raw.matchPercentage === 'number' && !isNaN(raw.matchPercentage)
     ? Math.max(0, Math.min(100, Math.round(raw.matchPercentage)))
-    : (jobDescription ? Math.max(20, Math.min(95, Math.round(score * 0.95))) : score);
+    : (jobDescription ? Math.max(20, Math.min(100, Math.round(score * 0.98))) : score);
 
   // Apply comprehensive domain-aware keyword extraction, branch boundaries & equivalency deduplication
   const processedKws = processDomainKeywords(
@@ -306,15 +306,11 @@ CRITICAL EVALUATION RULES:
    - Never recommend unrelated branch-specific keywords (e.g. never suggest CAD/CAM or Civil tools for a Software Engineer, or web frameworks for a Civil Engineer, unless the job description explicitly asks for it).
    - Do NOT treat soft skills as technical keywords.
    - Do NOT mark a keyword as missing if its equivalent technology or variation is already present in the resume.
-3. Calculate the ATS score (0-100) dynamically, authentically, and unconstrained across the full 0–100 spectrum:
-   - Evaluate real keyword coverage (matching vs missing skills).
-   - Evaluate quantified business accomplishments (STAR framework, metrics, percentages, dollar scale).
-   - Evaluate single-column ATS formatting and standard section headers.
-   - Evaluate active leadership verbs and writing conciseness.
-   - DO NOT default or artificially cluster scores into narrow bands like 70-82.
-   - Give exceptional resumes the high scores they deserve (e.g. 86, 89, 92, 95).
-   - Give under-optimized or entry-level resumes accurate lower scores (e.g. 38, 49, 58, 64).
-   - Reflect true real-world ATS acceptance probability.
+3. Calculate the ATS score (0-100) dynamically, authentically, and unconstrained across the full 0–100 spectrum using these benchmark tiers:
+   - High Competitiveness (80–99): Resumes with strong job-description keyword alignment, measurable achievements (metrics, %, numbers), relevant skills, and well-structured, ATS-friendly format receive higher scores (e.g., 87, 91, 94, 96, 98). DO NOT artificially cap strong resumes at 85 or 86! Exceptional candidates MUST be awarded scores above 90.
+   - Moderate Competitiveness (50–79): Resumes with partial keyword alignment, limited measurable achievements, or some missing job-relevant skills receive moderate scores (e.g., 56, 68, 75).
+   - Low Competitiveness (20–49): Resumes with significant keyword gaps, missing relevant skills, weak descriptions, or ATS parsing issues receive lower scores (e.g., 28, 38, 45).
+   - Reflect authentic real-world ATS acceptance probability.
 3. Calculate matchPercentage (0-100): The exact mathematical percentage of role-critical qualifications, tools, and competencies satisfied by the resume.
 4. Extract matching vs missing keywords accurately.
 5. Provide detailed, informative breakdowns for Content, Style, Skills, Format, and Section-by-Section evaluation.
