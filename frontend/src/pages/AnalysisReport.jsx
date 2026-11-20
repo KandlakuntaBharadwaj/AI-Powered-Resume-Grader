@@ -5,6 +5,7 @@ import { downloadResumePdf } from '../services/pdfExportService';
 import ScoreGauge from '../components/ScoreGauge';
 import KeywordsChart from '../components/KeywordsChart';
 import CategoryBreakdownChart from '../components/CategoryBreakdownChart';
+import AtsCompetitivenessReference from '../components/AtsCompetitivenessReference';
 import {
   Download,
   ArrowLeft,
@@ -322,6 +323,9 @@ const AnalysisReport = () => {
                   'Your resume has strong foundations. Review the category tabs above and the actionable recommendations below to optimize your score before submitting.'}
               </p>
             </div>
+
+            {/* ATS Competitiveness Benchmark Reference */}
+            <AtsCompetitivenessReference />
           </div>
         )}
 

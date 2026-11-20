@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import AtsCompetitivenessReference from '../components/AtsCompetitivenessReference';
 import {
   Sparkles,
   ArrowRight,
@@ -239,6 +240,12 @@ const LandingPage = () => {
               <p>Export a polished, executive-level PDF audit report with full breakdown, metrics, and actionable checklists to review anytime.</p>
             </div>
           </div>
+
+          {/* ATS Competitiveness Benchmark Reference */}
+          <AtsCompetitivenessReference
+            title="ATS Competitiveness Benchmark Scale"
+            subtitle="Industry criteria used by Applicant Tracking Systems to calibrate candidate scoring"
+          />
         </div>
       </section>
 

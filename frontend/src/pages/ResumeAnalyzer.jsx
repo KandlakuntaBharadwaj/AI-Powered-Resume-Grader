@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FileUpload from '../components/FileUpload';
 import AnalysisLoader from '../components/AnalysisLoader';
+import AtsCompetitivenessReference from '../components/AtsCompetitivenessReference';
 import { uploadResume } from '../apis/api';
 import { Sparkles, FileText, AlertCircle, ArrowLeft, HelpCircle } from 'lucide-react';
 
@@ -178,6 +179,12 @@ const ResumeAnalyzer = () => {
               </p>
             </div>
           </form>
+
+          {/* ATS Competitiveness Reference Guide */}
+          <AtsCompetitivenessReference
+            title="ATS Competitiveness Benchmark Scale"
+            subtitle="Understand how ATS algorithms evaluate your resume before analyzing"
+          />
         </div>
       )}
     </div>
