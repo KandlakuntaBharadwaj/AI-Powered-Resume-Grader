@@ -4148,6 +4148,168 @@ a {
 /* ========================================================= */
 /* ATS COMPETITIVENESS BENCHMARK SCALE                       */
 /* ========================================================= */
+.competitiveness-section {
+  background: linear-gradient(180deg, rgba(17, 17, 17, 0.4) 0%, rgba(11, 11, 11, 0.9) 100%);
+  border-top: 1px solid var(--surface-border);
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.competitiveness-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+@media (max-width: 900px) {
+  .competitiveness-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.comp-tier-card {
+  background: var(--surface-color);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.comp-tier-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.comp-tier-card.high {
+  border-top: 3px solid #22C55E;
+}
+
+.comp-tier-card.high:hover {
+  border-color: rgba(34, 197, 94, 0.45);
+}
+
+.comp-tier-card.moderate {
+  border-top: 3px solid #FACC15;
+}
+
+.comp-tier-card.moderate:hover {
+  border-color: rgba(250, 204, 21, 0.45);
+}
+
+.comp-tier-card.low {
+  border-top: 3px solid #EF4444;
+}
+
+.comp-tier-card.low:hover {
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+.comp-tier-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.comp-tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-full);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.comp-tier-badge.high {
+  background: rgba(34, 197, 94, 0.14);
+  color: #22C55E;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.comp-tier-badge.moderate {
+  background: rgba(250, 204, 21, 0.14);
+  color: #FACC15;
+  border: 1px solid rgba(250, 204, 21, 0.3);
+}
+
+.comp-tier-badge.low {
+  background: rgba(239, 68, 68, 0.14);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.comp-tier-score {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.comp-tier-body {
+  font-size: 0.94rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.comp-tier-footer {
+  padding-top: 1rem;
+  border-top: 1px solid var(--surface-border-subtle);
+}
+
+.comp-tier-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.comp-tier-tag.high {
+  color: #22C55E;
+}
+
+.comp-tier-tag.moderate {
+  color: #FACC15;
+}
+
+.comp-tier-tag.low {
+  color: #EF4444;
+}
+
+/* Pro Tip Callout */
+.pro-tip-box {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(250, 204, 21, 0.08);
+  border: 1px solid rgba(250, 204, 21, 0.22);
+  border-radius: var(--radius-sm);
+  padding: 0.65rem 0.95rem;
+  margin-top: 0.6rem;
+  margin-bottom: 0.85rem;
+  color: var(--text-secondary);
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.pro-tip-icon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.pro-tip-text strong {
+  color: var(--primary-color);
+  margin-right: 0.35rem;
+}
+
 .ats-competitiveness-card {
   background: var(--surface-card);
   border: 1px solid var(--surface-border);

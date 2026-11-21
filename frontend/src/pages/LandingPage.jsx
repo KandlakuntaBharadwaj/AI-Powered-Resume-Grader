@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import AtsCompetitivenessReference from '../components/AtsCompetitivenessReference';
 import {
   Sparkles,
   ArrowRight,
   ShieldCheck,
   CheckCircle2,
+  AlertTriangle,
+  AlertCircle,
   FileCheck2,
   Cpu,
   Target,
@@ -240,12 +241,70 @@ const LandingPage = () => {
               <p>Export a polished, executive-level PDF audit report with full breakdown, metrics, and actionable checklists to review anytime.</p>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* ATS Competitiveness Benchmark Reference */}
-          <AtsCompetitivenessReference
-            title="ATS Competitiveness Benchmark Scale"
-            subtitle="Industry criteria used by Applicant Tracking Systems to calibrate candidate scoring"
-          />
+      {/* RESUME COMPETITIVENESS LEVELS */}
+      <section className="competitiveness-section" id="competitiveness">
+        <div className="section-container">
+          <div className="section-header">
+            <span className="section-pill">Score Classification</span>
+            <h2>Resume Competitiveness Levels</h2>
+            <p>Understand how modern Applicant Tracking Systems and hiring teams evaluate and rank candidate resumes.</p>
+          </div>
+
+          <div className="competitiveness-cards-grid">
+            {/* High Competitiveness */}
+            <div className="comp-tier-card high">
+              <div className="comp-tier-card-top">
+                <div className="comp-tier-badge high">
+                  <CheckCircle2 size={16} />
+                  <span>High Competitiveness</span>
+                </div>
+                <span className="comp-tier-score text-emerald">80–99</span>
+              </div>
+              <p className="comp-tier-body">
+                Resumes with strong job-description keyword alignment, measurable achievements, relevant skills, and a well-structured, ATS-friendly format.
+              </p>
+              <div className="comp-tier-footer">
+                <span className="comp-tier-tag high">Top Interview Callbacks</span>
+              </div>
+            </div>
+
+            {/* Moderate Competitiveness */}
+            <div className="comp-tier-card moderate">
+              <div className="comp-tier-card-top">
+                <div className="comp-tier-badge moderate">
+                  <AlertTriangle size={16} />
+                  <span>Moderate Competitiveness</span>
+                </div>
+                <span className="comp-tier-score text-gold">50–79</span>
+              </div>
+              <p className="comp-tier-body">
+                Resumes with partial keyword alignment, limited measurable achievements, or some missing job-relevant skills.
+              </p>
+              <div className="comp-tier-footer">
+                <span className="comp-tier-tag moderate">Optimization Recommended</span>
+              </div>
+            </div>
+
+            {/* Low Competitiveness */}
+            <div className="comp-tier-card low">
+              <div className="comp-tier-card-top">
+                <div className="comp-tier-badge low">
+                  <AlertCircle size={16} />
+                  <span>Low Competitiveness</span>
+                </div>
+                <span className="comp-tier-score text-danger">20–49</span>
+              </div>
+              <p className="comp-tier-body">
+                Resumes with significant keyword gaps, missing relevant skills, weak descriptions, or ATS parsing issues.
+              </p>
+              <div className="comp-tier-footer">
+                <span className="comp-tier-tag low">Major Revisions Needed</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 

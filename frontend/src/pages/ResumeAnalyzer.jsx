@@ -4,7 +4,7 @@ import FileUpload from '../components/FileUpload';
 import AnalysisLoader from '../components/AnalysisLoader';
 import AtsCompetitivenessReference from '../components/AtsCompetitivenessReference';
 import { uploadResume } from '../apis/api';
-import { Sparkles, FileText, AlertCircle, ArrowLeft, HelpCircle } from 'lucide-react';
+import { Sparkles, FileText, AlertCircle, ArrowLeft, HelpCircle, Info } from 'lucide-react';
 
 const ResumeAnalyzer = () => {
   const [file, setFile] = useState(null);
@@ -126,6 +126,14 @@ const ResumeAnalyzer = () => {
               <p className="section-desc">
                 Paste the full job posting text (responsibilities, qualifications, and requirements) to analyze keyword match rate.
               </p>
+
+              {/* Pro Tip Callout */}
+              <div className="pro-tip-box">
+                <Info size={16} className="pro-tip-icon" />
+                <span className="pro-tip-text">
+                  <strong>Pro Tip:</strong> Add a job description related to your target role to get a more accurate ATS score.
+                </span>
+              </div>
 
               <div className="job-desc-wrapper">
                 <textarea
