@@ -95,8 +95,9 @@ const ResumeAnalyzer = () => {
           onRetry={handleRetry}
         />
       ) : (
-        <div className="analyzer-card">
-          <form onSubmit={handleAnalyze} className="analyzer-form">
+        <>
+          <div className="analyzer-card">
+            <form onSubmit={handleAnalyze} className="analyzer-form">
             {/* Step 1: File Upload */}
             <div className="form-section">
               <div className="section-label-row">
@@ -129,9 +130,9 @@ const ResumeAnalyzer = () => {
 
               {/* Pro Tip Callout */}
               <div className="pro-tip-box">
-                <Info size={16} className="pro-tip-icon" />
+                <Info size={15} className="pro-tip-icon" />
                 <span className="pro-tip-text">
-                  <strong>Pro Tip:</strong> Add a job description related to your target role to get a more accurate ATS score.
+                  <strong>Pro Tip:</strong> Add a target job description for a more accurate ATS score.
                 </span>
               </div>
 
@@ -187,15 +188,17 @@ const ResumeAnalyzer = () => {
               </p>
             </div>
           </form>
-
-          {/* ATS Competitiveness Reference Guide */}
-          <AtsCompetitivenessReference
-            title="ATS Competitiveness Benchmark Scale"
-            subtitle="Understand how ATS algorithms evaluate your resume before analyzing"
-          />
         </div>
-      )}
-    </div>
+
+        {/* ATS Competitiveness Reference Guide */}
+        <AtsCompetitivenessReference
+          title="ATS Competitiveness Benchmark"
+          subtitle="Score calibration used during evaluation"
+          compact={true}
+        />
+      </>
+    )}
+  </div>
   );
 };
 
