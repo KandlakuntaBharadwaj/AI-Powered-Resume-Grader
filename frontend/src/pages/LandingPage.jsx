@@ -138,7 +138,7 @@ const LandingPage = () => {
                   </div>
                   <div className="m-stat">
                     <span className="m-label">Missing Critical</span>
-                    <span className="m-val text-danger">3 Gaps</span>
+                    <span className="m-val text-danger">2 Gaps</span>
                   </div>
                 </div>
 
@@ -147,8 +147,8 @@ const LandingPage = () => {
                   <span className="m-tag match">Node.js</span>
                   <span className="m-tag match">System Architecture</span>
                   <span className="m-tag match">MongoDB</span>
-                  <span className="m-tag miss">+ CI/CD Pipelines</span>
-                  <span className="m-tag miss">+ Kubernetes</span>
+                  <span className="m-tag miss">+ JavaScript</span>
+                  <span className="m-tag miss">+ SQL</span>
                 </div>
 
                 <div className="mockup-pill-footer">
